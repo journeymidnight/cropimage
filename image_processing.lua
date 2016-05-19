@@ -42,7 +42,14 @@ if err then
     ngx.exit(500)
 end
 
+if res == ngx.null then
+    ngx.log(ngx.ERR, "no element popped:", err)
+    ngx.status = 408
+    ngx.exit(408)
+end
+
 if res[2] ~= "200" then
+    ngx.status = res[2]
     ngx.exit(res[2])
 end
 
