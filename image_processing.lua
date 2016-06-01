@@ -19,15 +19,17 @@ data.uuid = id
 data.url = uri
 local t = json.encode(data)
 ngx.log(ngx.NOTICE, "uri =  ", uri)
-local res, err = red:exists(uri)
-if res == 1 then
-    res, err = red:get(uri)
-    if err then
-        ngx.exit(err)
-    else
-        ngx.print(res)
-        ngx.exit(200)
-    end
+if ngx.var.debug ~= "on" then
+	local res, err = red:exists(uri)
+	if res == 1 then
+	    res, err = red:get(uri)
+	    if err then
+	        ngx.exit(err)
+	    else
+	        ngx.print(res)
+	        ngx.exit(200)
+	    end
+	end
 end
 
 local res, err = red:lpush("taskQueue",t)
