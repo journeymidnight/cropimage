@@ -25,7 +25,7 @@ install_libvips_from_source() {
   tar zvxf vips-$vips_version_latest_major_minor.$vips_version_latest_patch.tar.gz
   cd vips-$vips_version_latest_major_minor.$vips_version_latest_patch
   CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0" ./configure --disable-debug --disable-docs --disable-static --without-magick --disable-dependency-tracking --enable-cxx=yes --without-python --without-orc --without-fftw $1
-  make
+  make -j4
   make install
   cd ..
   rm -rf vips-$vips_version_latest_major_minor.$vips_version_latest_patch
