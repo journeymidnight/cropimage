@@ -1,0 +1,24 @@
+{
+	"ImportPath": "github.com/thesues/image-crop/cropimage",
+	"GoVersion": "go1.6",
+	"Deps": [
+		{
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Rev": "8873b2f1995f59d4bcdd2b0dc9858e2cb9bf0c13"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Rev": "8873b2f1995f59d4bcdd2b0dc9858e2cb9bf0c13"
+		},
+		{
+			"ImportPath": "github.com/tj/go-debug",
+			"Comment": "v2.0.0",
+			"Rev": "ff4a55a20a86994118644bbddc6a216da193cc13"
+		},
+		{
+			"ImportPath": "gopkg.in/h2non/bimg.v1",
+			"Comment": "v1.0.0-2-g96d3fa3",
+			"Rev": "96d3fa344181c6e1265e772fc9727d05e1c73900"
+		}
+	]
+}
