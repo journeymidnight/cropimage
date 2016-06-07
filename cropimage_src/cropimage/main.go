@@ -109,7 +109,11 @@ func PreProcess(result map[string]string) (CropTask, error){
 	} else {
 		n.large, _ = strconv.Atoi(strings.Split(result["mlarge"], "/")[2])
 	}
- 
+
+	if n.mode != 3 && n.width == 0 && n.height == 0 {
+		return CropTask{}, errors.New("no width or height specified")
+	} 
+
 	if result["mproportion"] == ""{
 		n.proportion = 100
 	} else {
