@@ -14,6 +14,8 @@ local uuid = require "resty.uuid"
 local id = uuid.gen20()
 local json = require("cjson")
 local uri = ngx.var.request_uri
+local puremagic = require "resty.puremagic"
+
 local data = {}
 data.uuid = id
 data.url = uri
@@ -26,6 +28,8 @@ if ngx.var.debug ~= "on" then
 	    if err then
 	        ngx.exit(err)
 	    else
+			local mimetype = puremagic.via_content(res, 'unknow')
+			ngx.header["Content-Type"] = mimetype
 	        ngx.print(res)
 	        ngx.exit(200)
 	    end
@@ -65,6 +69,8 @@ res, err = red:get(uri)
 if err then
     ngx.exit(err)
 end
+local mimetype = puremagic.via_content(res, 'unknow')
+ngx.header["Content-Type"] = mimetype
 ngx.print(res)
  	
 local ok, err = red:set_keepalive(10000, 100)
