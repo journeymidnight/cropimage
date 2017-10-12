@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"gopkg.in/h2non/bimg.v1"
+	"github.com/thesues/bimg"
 	"net/http"
 	"encoding/json"
 	"regexp"
