@@ -3,10 +3,11 @@ workspace:
   path: src/github.com/journeymidnight/cropimage
 pipeline:
   build:
-    image: centos:7
+    image: thesues/centos7-vips
     commands:
       - "bash build.sh"
   publish:
     image: plugins/docker
+    repo:  thesues/cropimage
     secrets: [docker_username, docker_password]
     dockerfile: Dockerfile
