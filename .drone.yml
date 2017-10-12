@@ -1,0 +1,12 @@
+workspace:
+  base: /go
+  path: src/github.com/journeymidnight/cropimage
+pipeline:
+  build:
+    image: centos:7
+    commands:
+      - "bash build.sh"
+  publish:
+    image: plugins/docker
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile

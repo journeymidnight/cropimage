@@ -1,0 +1,6 @@
+FROM centos:7
+WORKDIR /build
+ADD preinstall.sh /build
+ADD vips-8.3.1.tar.gz /build
+RUN bash preinstall.sh
+
