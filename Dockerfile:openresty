@@ -1,0 +1,7 @@
+FROM openresty/openresty:centos
+
+WORKDIR /image-crop
+COPY ["puremagic.lua", "libuuidx.so", "uuid.lua" , "/usr/local/openresty/lualib/resty/"]
+COPY ["nginx.conf" , "/usr/local/openresty/nginx/conf/"]
+COPY ["image_processing.lua", "/image-crop/"]
+RUN mkdir /var/log/nginx/

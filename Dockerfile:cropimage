@@ -1,0 +1,5 @@
+FROM thesues/centos7-vips
+
+WORKDIR /image-crop
+COPY ["cropimage", "/image-crop/"]
+ENTRYPOINT ["./cropimage"]

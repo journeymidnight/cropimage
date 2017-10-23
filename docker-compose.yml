@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  redis:
+    image: "redis:alpine"
+  openresty:
+    image: demo/openresty
+    ports:
+      - 9001:80
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_SERVER=redis
+  cropimage2:
+    image: demo/cropimage
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_SERVER=redis
+  cropimage1:
+    image: demo/cropimage
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_SERVER=redis

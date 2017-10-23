@@ -3,8 +3,15 @@ package.cpath = "/usr/local/openresty/lualib/?.so;"
 local redis = require "resty.redis"
 local red = redis.new()
 -- global timeout must bigger than blpop timeout
+--
+local redis_server = os.getenv("REDIS_SERVER");
+if redis_server == nil then redis_server = "127.0.0.1" end
+local redis_port = os.getenv("REDIS_PORT");
+if redis_port == nil then redis_port = "6379" end
+
+
 red:set_timeout(60000)
-local ok, err = red.connect(red, '127.0.0.1', '6379')
+local ok, err = red.connect(red, redis_server, redis_port)
 if not ok then
     ngx.log(ngx.ERR, "failed to connect: ", err)
     ngx.exit(500)

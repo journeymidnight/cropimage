@@ -1,10 +1,6 @@
 FROM centos:7
 WORKDIR /build
-RUN yum install -y pango-devel
+RUN yum install -y pango-devel wqy-zenhei-fonts.noarch  wqy-microhei-fonts.noarch  google-droid-sans-fonts.noarch
 ADD preinstall.sh /build
 ADD vips-8.3.1.tar.gz /build
 RUN bash preinstall.sh
-
-RUN yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo && yum install -y openresty redis wqy-zenhei-fonts.noarch  wqy-microhei-fonts.noarch  google-droid-sans-fonts.noarch
-RUN yum install -y epel-release &&  yum install -y redis
-
