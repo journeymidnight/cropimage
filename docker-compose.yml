@@ -4,7 +4,7 @@ services:
   redis:
     image: "redis:alpine"
   openresty:
-    image: demo/openresty
+    image: thesues/openresty-cropimage 
     ports:
       - 9001:80
     restart: always
@@ -13,14 +13,14 @@ services:
     environment:
       - REDIS_SERVER=redis
   cropimage2:
-    image: demo/cropimage
+    image: thesues/cropimage
     restart: always
     depends_on:
       - redis
     environment:
       - REDIS_SERVER=redis
   cropimage1:
-    image: demo/cropimage
+    image: thesues/cropimage
     restart: always
     depends_on:
       - redis
