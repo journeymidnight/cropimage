@@ -1,0 +1,8 @@
+FROM openresty/openresty:alpine-fat
+
+WORKDIR /image-crop
+COPY ["puremagic.lua", "/usr/local/openresty/lualib/resty/"]
+COPY ["nginx.conf" , "/usr/local/openresty/nginx/conf/"]
+COPY ["image_processing.lua", "/image-crop/"]
+RUN apk add --no-cache libuuid && luarocks install lua-resty-uuid
+RUN mkdir /var/log/nginx/

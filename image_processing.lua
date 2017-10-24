@@ -18,7 +18,7 @@ if not ok then
 end
 
 local uuid = require "resty.uuid"
-local id = uuid.gen20()
+local id = uuid.generate()
 local json = require("cjson")
 local uri = ngx.var.request_uri
 local puremagic = require "resty.puremagic"
