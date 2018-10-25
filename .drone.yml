@@ -11,8 +11,8 @@ pipeline:
     repo:  thesues/cropimage
     secrets: [docker_username, docker_password]
     dockerfile: docker/Dockerfile-alpine-cropimage
-  publish:
-    image: plugins/docker
-    repo:  thesues/openresty-cropimage
-    secrets: [docker_username, docker_password]
-    dockerfile: docker/Dockerfile-alpine-openresty
+    #  publish:
+    #    image: plugins/docker
+    #    repo:  thesues/openresty-cropimage
+    #    secrets: [docker_username, docker_password]
+    #    dockerfile: docker/Dockerfile-alpine-openresty
