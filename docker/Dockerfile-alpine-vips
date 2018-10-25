@@ -1,7 +1,7 @@
 FROM alpine:3.5
 
 WORKDIR /tmp
-ADD vips-8.3.1.tar.gz /tmp
+COPY vips-8.3.1.tar.gz /tmp
 RUN apk add --no-cache --virtual .build-deps \
   gcc g++ make libc-dev \
   curl \
@@ -26,8 +26,8 @@ RUN apk add --no-cache --virtual .build-deps \
   libxml2 \
   pango \
   libjpeg-turbo && \
-  tar zvxf vips-8.5.9.tar.gz && \
-  cd vips-8.5.9 && \
+  tar zvxf vips-8.3.1.tar.gz && \
+  cd vips-8.3.1 && \
   ./configure --without-python --without-gsf && \
   make -j4 && \
   make install && \
