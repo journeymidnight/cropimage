@@ -393,7 +393,7 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	if plan.proportion != 0 {
 		factor := float64(plan.proportion) / 100.0
 		logger.Println("zoo factor :", factor)
-		o = bimg.Options{Width: int(float64(xwidth) * factor), Height: int(float64(xheight) * factor), Force: true}
+		o = bimg.Options{Width: int(float64(xwidth) * factor), Height: int(float64(xheight) * factor), Force: true, Type: 1}
 		new, err = bimg.Resize(buffer, o)
 		return new, err
 	}
@@ -403,9 +403,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	case "lfit":
 		adjustCropTask(&buffer, plan)
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true, Type: 1}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false, Type: 1}
 		}
 		new, err = bimg.Resize(buffer, o)
 	//短边优先
@@ -413,9 +413,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 		adjustCropTask(&buffer, plan)
 		logger.Println("now plan", plan)
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true, Type: 1}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false, Type: 1}
 		}
 		new, err = bimg.Resize(buffer, o)
 	//case "fill":
@@ -431,23 +431,23 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	//	new, err = bimg.Resize(buffer, o)
 	case "pad":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: true, Type: 1}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: false, Type: 1}
 		}
 		new, err = bimg.Resize(buffer, o)
 	case "fixed":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: true, Type: 1}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: false, Type: 1}
 		}
 		new, err = bimg.Resize(buffer, o)
 	case "fill":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: true, Type: 1}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: false, Type: 1}
 		}
 		new, err = bimg.Resize(buffer, o)
 	}
