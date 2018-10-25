@@ -8,7 +8,6 @@ RUN apk add --no-cache --virtual .build-deps \
   libtool \
   tar \
   gettext && \
-
   apk add --no-cache --virtual .libdev-deps \
   glib-dev \
   libpng-dev \
@@ -18,7 +17,6 @@ RUN apk add --no-cache --virtual .build-deps \
   libxml2-dev \
   pango-dev   \
   libjpeg-turbo-dev && \
-
   apk add --no-cache --virtual .run-deps \
   glib \
   libpng \
