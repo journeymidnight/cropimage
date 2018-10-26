@@ -391,6 +391,7 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	img := bimg.NewImage(buffer)
 	s, _ := img.Size()
 	mime := img.Type()
+	logger.Printf("original mime =  %s\n", mime)
 	xwidth := s.Width
 	xheight := s.Height
 	var o bimg.Options
@@ -462,7 +463,10 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	return new, mime, err
+	newImg := bimg.NewImage(new)
+	newType := newImg.Type()
+	logger.Printf("new mime =  %s\n", newType)
+	return new, newType, err
 }
 
 //func ProcessWaterMark(filename string, object string, plan *WaterMarkTask) ([]byte, error) {
