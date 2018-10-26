@@ -438,6 +438,7 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	//	}
 	//	new, err = bimg.Resize(buffer, o)
 	case "pad":
+		logger.Println("pad mode:", plan.color)
 		if plan.limit == 0 {
 			o = bimg.Options{Width: plan.width, Height: plan.height, Background: plan.color, Embed: true, Enlarge: true}
 		} else {
