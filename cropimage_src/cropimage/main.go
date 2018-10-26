@@ -26,6 +26,11 @@ type TaskData struct {
 	Url  string `json:"url"`
 }
 
+type ReturnData struct {
+	Blob []byte `json:"blob"`
+	Mime string `json:"mime"`
+}
+
 type CropTask struct {
 	mode       string
 	width      int
@@ -59,6 +64,7 @@ type FinishTask struct {
 	uuid string
 	url  string
 	blob []byte
+	mime string
 }
 
 const (
@@ -73,12 +79,13 @@ var resizeNames = resizePattern.SubexpNames()
 var watermarkNames = watermarkPattern.SubexpNames()
 
 func returnError(code int, uuid string, url string, Q chan FinishTask) {
-	Q <- FinishTask{code, uuid, url, nil}
+	Q <- FinishTask{code, uuid, url, nil, ""}
 }
 
 func returnUnchange(code int, uuid string, url string, filePath string, Q chan FinishTask) {
 	buffer, _ := bimg.Read(filePath)
-	Q <- FinishTask{code, uuid, url, buffer}
+	img := bimg.NewImage(buffer)
+	Q <- FinishTask{code, uuid, url, buffer, img.Type()}
 }
 
 func PreProcess(result map[string]string) (CropTask, error) {
@@ -378,11 +385,12 @@ func adjustCropTask(buffer *[]byte, plan *CropTask) {
 	return
 }
 
-func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
+func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	logger.Println("start to Process plan", plan)
 	buffer, _ := bimg.Read(filename)
 	img := bimg.NewImage(buffer)
 	s, _ := img.Size()
+	mime := img.Type()
 	xwidth := s.Width
 	xheight := s.Height
 	var o bimg.Options
@@ -393,9 +401,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	if plan.proportion != 0 {
 		factor := float64(plan.proportion) / 100.0
 		logger.Println("zoo factor :", factor)
-		o = bimg.Options{Width: int(float64(xwidth) * factor), Height: int(float64(xheight) * factor), Force: true, Type: 1}
+		o = bimg.Options{Width: int(float64(xwidth) * factor), Height: int(float64(xheight) * factor), Force: true}
 		new, err = bimg.Resize(buffer, o)
-		return new, err
+		return new, mime, err
 	}
 
 	switch plan.mode {
@@ -403,9 +411,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	case "lfit":
 		adjustCropTask(&buffer, plan)
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	//短边优先
@@ -413,9 +421,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 		adjustCropTask(&buffer, plan)
 		logger.Println("now plan", plan)
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	//case "fill":
@@ -431,30 +439,30 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, error) {
 	//	new, err = bimg.Resize(buffer, o)
 	case "pad":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: true, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: false, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	case "fixed":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: true, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: false, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Force: true, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	case "fill":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: true, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: false, Type: 1}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Crop: true, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	return new, err
+	return new, mime, err
 }
 
 //func ProcessWaterMark(filename string, object string, plan *WaterMarkTask) ([]byte, error) {
@@ -657,7 +665,7 @@ func Slave(taskQ chan string, resultQ chan FinishTask, client *http.Client, slav
 				//	}
 				//}
 
-				processed_blob, err := ProcessImage(origin_filename, &plan)
+				processed_blob, mime, err := ProcessImage(origin_filename, &plan)
 				if err != nil {
 					returnUnchange(200, uuid, url, origin_filename, resultQ)
 					os.Remove(origin_filename)
@@ -667,7 +675,7 @@ func Slave(taskQ chan string, resultQ chan FinishTask, client *http.Client, slav
 				os.Remove(origin_filename)
 
 				//write_to_local_file(uuid, processed_blob)
-				resultQ <- FinishTask{200, uuid, url, processed_blob}
+				resultQ <- FinishTask{200, uuid, url, processed_blob, mime}
 			} else if taskType == WATERMARK {
 				//plan, err := PreProcessWaterMark(captures)
 				//
@@ -740,8 +748,10 @@ func reportFinish(resultQ chan FinishTask, pool *redis.Pool) {
 	for r := range resultQ {
 		//put data back to redis
 		if r.code == 200 {
+			rd := ReturnData{r.blob, r.mime}
+			combine, _ := json.Marshal(&rd)
 			redis_conn.Do("MULTI")
-			redis_conn.Do("SET", r.url, r.blob)
+			redis_conn.Do("SET", r.url, combine)
 			redis_conn.Do("LPUSH", r.uuid, r.code)
 			redis_conn.Do("EXEC")
 			r.blob = nil
