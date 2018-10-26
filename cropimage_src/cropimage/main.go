@@ -742,16 +742,23 @@ func write_to_local_file(uuid string, blob []byte) {
 	tmpfile.Close()
 }
 
+func combineData(blob []byte, mime string) []byte {
+	var a [20]byte
+	copy(a[:], mime)
+	return append(a[:], blob[:]...)
+}
+
 func reportFinish(resultQ chan FinishTask, pool *redis.Pool) {
 	redis_conn := pool.Get()
 	defer redis_conn.Close()
 	for r := range resultQ {
 		//put data back to redis
 		if r.code == 200 {
-			rd := ReturnData{r.blob, r.mime}
-			combine, _ := json.Marshal(&rd)
+			//rd := ReturnData{r.blob, r.mime}
+			//combine, _ := json.Marshal(&rd)
+			combined := combineData(r.blob, r.mime)
 			redis_conn.Do("MULTI")
-			redis_conn.Do("SET", r.url, combine)
+			redis_conn.Do("SET", r.url, combined)
 			redis_conn.Do("LPUSH", r.uuid, r.code)
 			redis_conn.Do("EXEC")
 			r.blob = nil
