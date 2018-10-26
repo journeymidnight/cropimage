@@ -6,13 +6,13 @@ pipeline:
     image: thesues/centos7-vips
     commands:
       - "bash build.sh"
-  publish:
+  publish-cropimage:
     image: plugins/docker
     repo:  thesues/cropimage
     secrets: [docker_username, docker_password]
     dockerfile: docker/Dockerfile-alpine-cropimage
-    #  publish:
-    #    image: plugins/docker
-    #    repo:  thesues/openresty-cropimage
-    #    secrets: [docker_username, docker_password]
-    #    dockerfile: docker/Dockerfile-alpine-openresty
+  publish-openresty:
+    image: plugins/docker
+    repo:  thesues/openresty-cropimage
+    secrets: [docker_username, docker_password]
+    dockerfile: docker/Dockerfile-alpine-openresty
