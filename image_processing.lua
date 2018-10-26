@@ -25,21 +25,28 @@ local uri = ngx.var.request_uri
 local data = {}
 data.uuid = id
 data.url = uri
+
+function trimTailZero(mime)
+    ngx.log(ngx.NOTICE, "mime=", mime)
+    return mime
+end
+
 local t = json.encode(data)
 ngx.log(ngx.NOTICE, "uri =  ", uri)
 if ngx.var.debug ~= "on" then
-	local res, err = red:exists(uri)
-	if res == 1 then
-	    res, err = red:get(uri)
-	    if err then
-	        ngx.exit(err)
-	    else
-                local obj = json.decode(data)
-		ngx.header["Content-Type"] = "image/" + obj.mime
-	        ngx.print(obj.blob)
-	        ngx.exit(200)
-	    end
-	end
+        local res, err = red:exists(uri)
+        if res == 1 then
+            res, err = red:get(uri)
+            if err then
+                ngx.exit(err)
+            else
+                local mime = trimTailZero(string.sub(res,1,20))
+                ngx.log(ngx.NOTICE, "mime=", mime)
+--                ngx.header["Content-Type"] = "image/"..mime
+                ngx.print(string.sub(res,21,string.len(res)-20))
+                ngx.exit(200)
+            end
+        end
 end
 
 local res, err = red:lpush("taskQueue",t)
@@ -76,10 +83,12 @@ if err then
     ngx.exit(err)
 end
 
-local obj = json.decode(data)
-ngx.header["Content-Type"] = "image/" + obj.mime
-ngx.print(obj.blob)
- 	
+local mime = trimTailZero(string.sub(res,1,20))
+ngx.log(ngx.NOTICE, "mime1=", mime)
+--ngx.header["Content-Type"] = "image/"..mime
+ngx.print(string.sub(res,21,string.len(res)-20))
+
+ngx.log(ngx.NOTICE, "content-type=", ngx.header["Content-Type"])
 local ok, err = red:set_keepalive(10000, 100)
 if not ok then
     ngx.log(ngx.ERR, "failed to set keepalive: ", err)

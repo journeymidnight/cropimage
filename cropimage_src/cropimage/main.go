@@ -391,7 +391,6 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	img := bimg.NewImage(buffer)
 	s, _ := img.Size()
 	mime := img.Type()
-	logger.Printf("original mime =  %s\n", mime)
 	xwidth := s.Width
 	xheight := s.Height
 	var o bimg.Options
@@ -440,9 +439,9 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	//	new, err = bimg.Resize(buffer, o)
 	case "pad":
 		if plan.limit == 0 {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: true}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Background: plan.color, Embed: true, Enlarge: true}
 		} else {
-			o = bimg.Options{Width: plan.width, Height: plan.height, Embed: true, Enlarge: false}
+			o = bimg.Options{Width: plan.width, Height: plan.height, Background: plan.color, Embed: true, Enlarge: false}
 		}
 		new, err = bimg.Resize(buffer, o)
 	case "fixed":
@@ -463,10 +462,7 @@ func ProcessImage(filename string, plan *CropTask) ([]byte, string, error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	newImg := bimg.NewImage(new)
-	newType := newImg.Type()
-	logger.Printf("new mime =  %s\n", newType)
-	return new, newType, err
+	return new, mime, err
 }
 
 //func ProcessWaterMark(filename string, object string, plan *WaterMarkTask) ([]byte, error) {
