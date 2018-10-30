@@ -576,6 +576,9 @@ func Slave(taskQ chan string, resultQ chan FinishTask, client *http.Client, slav
 		} else if pos_1 := strings.Index(url, "?x-oss-process=style/"); pos_1 != -1 {
 			pos = pos_1
 			pType = 1
+		} else if pos_2 := strings.Index(url, "?"); pos_2 != -1 {
+			pos = pos_2
+			pType = 2
 		} else {
 			logger.Printf("can not found convert parameters")
 			returnError(400, uuid, url, resultQ)
@@ -608,7 +611,7 @@ func Slave(taskQ chan string, resultQ chan FinishTask, client *http.Client, slav
 			continue
 		}
 
-		if pType == 1 {
+		if pType == 1 || pType == 2 {
 			returnUnchange(200, uuid, url, origin_filename, resultQ)
 			os.Remove(origin_filename)
 			continue
