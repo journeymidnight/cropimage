@@ -4,7 +4,10 @@ services:
   redis:
     image: "redis:alpine"
   openresty:
-    image: thesues/openresty-cropimage 
+    image: thesues/openresty-cropimage
+    networks:
+      integrate_vpcbr:
+        ipv4_address: "10.5.0.102"
     ports:
       - 9001:80
     restart: always
@@ -26,3 +29,7 @@ services:
       - redis
     environment:
       - REDIS_SERVER=redis
+
+networks:
+    integrate_vpcbr:
+       external: true
