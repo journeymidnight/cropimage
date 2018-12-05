@@ -2,7 +2,11 @@ version: '2'
 
 services:
   redis:
+    container_name: redis-cropimage
     image: "redis:alpine"
+    networks:
+      integrate_vpcbr:
+        ipv4_address: "10.5.0.105"
   openresty:
     image: thesues/openresty-cropimage
     networks:
@@ -14,21 +18,27 @@ services:
     depends_on:
       - redis
     environment:
-      - REDIS_SERVER=redis
+      - REDIS_SERVER=redis-cropimage
   cropimage2:
+    networks:
+      integrate_vpcbr:
+        ipv4_address: "10.5.0.103"
     image: thesues/cropimage
     restart: always
     depends_on:
       - redis
     environment:
-      - REDIS_SERVER=redis
+      - REDIS_SERVER=redis-cropimage
   cropimage1:
+    networks:
+      integrate_vpcbr:
+        ipv4_address: "10.5.0.104"
     image: thesues/cropimage
     restart: always
     depends_on:
       - redis
     environment:
-      - REDIS_SERVER=redis
+      - REDIS_SERVER=redis-cropimage
 
 networks:
     integrate_vpcbr:
